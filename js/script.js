@@ -150,3 +150,51 @@
     }
   });
 })();
+
+/* ============================================================
+   CERTIFICATE LIGHTBOX — MOBILE ONLY
+   Tapping a certificate image opens it full-size. This is
+   intentionally gated to mobile widths (<=760px) so desktop
+   browsing behavior is unchanged (clicking a certificate on
+   desktop still does nothing, same as before).
+============================================================ */
+(function(){
+  const lightbox = document.getElementById('cert-lightbox');
+  const lightboxImg = document.getElementById('cert-lightbox-img');
+  const closeBtn = document.getElementById('cert-lightbox-close');
+  const certImages = document.querySelectorAll('.cert-image');
+  if(!lightbox || !lightboxImg || !certImages.length) return;
+
+  const isMobile = () => window.matchMedia('(max-width:760px)').matches;
+
+  function openLightbox(img){
+    lightboxImg.src = img.src;
+    lightboxImg.alt = img.alt;
+    lightbox.classList.add('open');
+    lightbox.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeLightbox(){
+    lightbox.classList.remove('open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    lightboxImg.src = '';
+  }
+
+  certImages.forEach(img => {
+    img.addEventListener('click', () => {
+      if(isMobile()) openLightbox(img);
+    });
+  });
+
+  if(closeBtn) closeBtn.addEventListener('click', closeLightbox);
+
+  // tapping the dark backdrop (not the image itself) also closes it
+  lightbox.addEventListener('click', (e) => {
+    if(e.target === lightbox) closeLightbox();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape') closeLightbox();
+  });
+})();
+
